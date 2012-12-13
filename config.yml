@@ -1,0 +1,6 @@
+active_modules: [pygments, tags, blog, latex]
+author: Matt Alcock
+canonical_url: http://blog.mattalcock.com/
+modules:
+  pygments:
+    style: tango
