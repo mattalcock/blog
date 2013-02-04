@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset=utf-8>
+  
+    <title>Decorators &amp; Annotations | Matt Alcock - Thoughts from a Data Scientist</title>
+    <link rel="stylesheet" href="/static/style.css" type="text/css">
+    <link href="/feed.atom" rel="alternate" title="Recent Blog Posts" type="application/atom+xml">
+    <link rel="stylesheet" href="/static/_pygments.css" type="text/css">
+  
+  </head>
+  <body>
+    <div class=container>
+      <div class=header>
+       <a href="http://mattalcock.com">Matt Alcock</a> - Thoughts from a Data Scientist.
+      </div>
+      <div class=navigation>
+        <ul>
+          <li><a href="/">Blog</a>
+          <li><a href="/archive/">Archive</a>
+          <li><a href="/tags/">Tags</a>
+          <li><a href="/about/">About</a>
+        </ul>
+      </div>
+      <div class=body>
+      
+  <h1 class="title">Decorators &amp; Annotations</h1>
+
+  
+  <p class=date>written on Saturday, January 5, 2013
+  
+
+  <p>I wanted to highlight the power of decorators and annotations in python and give the novice Python programmer some insight into how they can be used. If you've only been using Python for a short while then both of these will probably be new.</p>
+<p>Decorators are a way of implementing the famous computer science decorator pattern. This pattern put in simple terms is a mechanism that allow you to inject or modify code in a function. In python you can have two different styles of decorator. The function defined style or the class defined style. I prefer the function style but I'll show you using a class structure as well.</p>
+<p>The best way to explain their use is through a well known example. The below code shows how to functionally compute the Fibonacci numbers.</p>
+<p>The Fibonacci sequence is : [0,1,1,2,3,5,8,13.....] where the nth number equalling the sum of n-1 and n-2.</p>
+<p>An elegant way of computing this is using the below code:</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">n</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+<p>So fib(7) would return 13. As you can see from the code this uses recursion. The challenge with this approach for calculating the fib sequence is that the low 'tail' function calls will get called multiple times. Remvoing this overhead is called 'tail recursion elimination' or TRE. Python doesn't support this and <a class="reference external" href="http://neopythonic.blogspot.co.uk/2009/04/tail-recursion-elimination.html">probably wont</a> . Below shows how running the fib function for just a small n can result in a massive numbers of calls of the tail values.</p>
+<div class="highlight"><pre><span class="n">fib</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="o">=</span> <span class="n">fib</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">fib</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="o">=</span> <span class="n">fib</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">fib</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="o">=</span> <span class="n">fib</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">.....</span>
+<span class="n">fib</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="o">=</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="o">..........</span> <span class="p">[</span><span class="n">All</span> <span class="n">fib</span> <span class="n">zeros</span> <span class="ow">and</span> <span class="n">fib</span> <span class="n">ones</span><span class="p">]</span>
+</pre></div>
+<p>A way to make this faster is to use a technique called Memoize. This remembers the result of a function for a given argument, stores it and if called again uses the stored version rather than re calculating. This can speed up the above by many orders of magnitude.</p>
+<p>The best way to implement this function calling memory is by decorating the function with some code that can modify the execution path to check a pre saved store first. Below is the memoize decorator as a function.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">memoize</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="n">cache</span><span class="o">=</span> <span class="p">{}</span>
+    <span class="k">def</span> <span class="nf">memf</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="n">definition</span>
+        <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">memf</span>
+</pre></div>
+<p>The memoize decorator above takes a function as an argument. It then creates a new function that stores the results of the function into a cash. The decorator then returns the new function that contains the original function call.
+We can then use some cleaver dynamic language tricks to re alias the fib function to the decorated version.</p>
+<div class="highlight"><pre><span class="n">fib</span> <span class="o">=</span> <span class="n">memoize</span><span class="p">(</span><span class="n">fib</span><span class="p">)</span>
+</pre></div>
+<p>Calling fib after this aliased decoration we can ensure that the decorated function will run instead of the basic fib function
+.
+I hope that explains how decorators work in python and gives you an example of use. So what are annotations?</p>
+<p>Annotations allow us to use decorators all over our code and are actually syntactic sugar (the same thing) as the above aliased line. Rather than re-aliasing fib to the decorated fib we can use annotations at the point of writing the fib function definition.</p>
+<p>An annotated fib function would look like this. Note the simple use of &#64; and the decorator name above the definition.</p>
+<div class="highlight"><pre><span class="nd">@memoize</span>
+<span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">n</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+<p>Simple hey! So annotations are just stylish and helpful ways to decorate functions at the place of definition. This really helps when your sharing code and working as a small team because you don't have to look all over the code to see if the function has been re-aliased and decorated it's right above the definition.</p>
+<p>Once of the best uses of this type of decoration using annotations is to log the performance of a function or to perform some detailed profiling. You only need write a single decorator to modify and wrap any function and then you just sprinkle the decorator around your code as annotations depending on what functions you want to time/profile or investigate in detail.</p>
+<p>As I mentioned before there is also a class style to writing decorators, lets use our memoize decorator as an example.</p>
+<p>Written as a class the decorator is:</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Memoize</span><span class="p">:</span>
+
+<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">[</span><span class="n">args</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">[</span><span class="n">args</span><span class="p">]</span>
+</pre></div>
+<p>The class has to have to functions to operate as a decorator. __init__ and __call__. Some people find this easier to read and construct others prefer the function style. I think it really depends on how advanced the decorator is going to be.</p>
+<p>The class style can then be applied in the exact same way as the above function style decorator.</p>
+<div class="highlight"><pre><span class="n">fib</span> <span class="o">=</span> <span class="n">Memoize</span><span class="p">(</span><span class="n">fib</span><span class="p">)</span>
+
+<span class="nd">@Memoize</span>
+<span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+   <span class="o">...</span>
+</pre></div>
+<p>I hope this has helped understand the basics of decorators and annotations.</p>
+
+
+  
+  <p class=tags>This entry was tagged
+    
+      <a href="/tags/introduction/">introduction</a> and 
+      <a href="/tags/python/">python</a>
+  
+
+  
+
+      </div>
+      <div class=footer>
+        <p>If you can't explain it simply, you don't understand it well enough. - Albert Einstein 
+        <p>&nbsp;
+        <p>&copy; Copyright 2013 by Matt Alcock. 
+        <p>
+          Contact me via <a href="mailto:mattalcock@mac.com" target="_blank">mail</a>,
+          <a href="http://twitter.com/mattalcock" target="_blank">@mattalcock</a>,
+          <a href="http://github.com/mattalcock" target="_blank">github</a>.
+        (<a href="/feed.atom" rel="alternate" title="Recent Blog Posts">feed</a>)
+        <p>
+            Created using rstblog developed by  <a href="http://github.com/mitsuhiko" target="_blank">Armin Ronacher</a>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21948353-3']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+  </body>
+</html>

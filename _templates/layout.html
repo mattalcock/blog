@@ -3,9 +3,7 @@
   <head>
     <meta charset=utf-8>
   {% block htmlhead %}
-    <title>{% block title %}Home{% endblock %} | Armin Ronacher's Thoughts and Writings</title>
-    <link rel="openid.server" href="http://www.myopenid.com/server">
-    <link rel="openid.delegate" href="http://mitsuhiko.myopenid.com/">
+    <title>{% block title %}Home{% endblock %} | Matt Alcock - Thoughts from a Data Scientist</title>
     <link rel="stylesheet" href="/static/style.css" type="text/css">
     <link href="/feed.atom" rel="alternate" title="Recent Blog Posts" type="application/atom+xml">
     {%- for link in links %}
@@ -17,39 +15,44 @@
   <body>
     <div class=container>
       <div class=header>
-       <a href="/about/">Matt Alcock</a> - Thoughts from a Data Scientist.
+       <a href="http://mattalcock.com">Matt Alcock</a> - Thoughts from a Data Scientist.
       </div>
       <div class=navigation>
         <ul>
-          <li><a href="/">blog</a>
-          <li><a href="/archive/">archive</a>
-          <li><a href="/tags/">tags</a>
-          <li><a href="/about/">about</a>
+          <li><a href="/">Blog</a>
+          <li><a href="/archive/">Archive</a>
+          <li><a href="/tags/">Tags</a>
+          <li><a href="/about/">About</a>
         </ul>
       </div>
       <div class=body>
       {% block body %}{% endblock %}
       </div>
       <div class=footer>
-        <p>&copy; Copyright {{ format_date(format='YYYY') }} by Matt Alcock.
+        <p>If you can't explain it simply, you don't understand it well enough. - Albert Einstein 
+        <p>&nbsp;
+        <p>&copy; Copyright {{ format_date(format='YYYY') }} by Matt Alcock. 
         <p>
-          Contact me via <a href="mailto:mattalcock@mac.com">mail</a>,
-          <a href="http://twitter.com/mattalcock">@mattalcock</a>,
-          <a href="http://github.com/mattalcock">github</a>
+          Contact me via <a href="mailto:mattalcock@mac.com" target="_blank">mail</a>,
+          <a href="http://twitter.com/mattalcock" target="_blank">@mattalcock</a>,
+          <a href="http://github.com/mattalcock" target="_blank">github</a>.
         (<a href="/feed.atom" rel="alternate" title="Recent Blog Posts">feed</a>)
         <p>
-            Created using rstblog developed by  <a href="http://github.com/mitsuhiko">Armin Ronacher</a>
+            Created using rstblog developed by  <a href="http://github.com/mitsuhiko" target="_blank">Armin Ronacher</a>
       </div>
     </div>
     <script type="text/javascript">
+
       var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-20909083-1']);
+      _gaq.push(['_setAccount', 'UA-21948353-3']);
       _gaq.push(['_trackPageview']);
+
       (function() {
         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
+
     </script>
   </body>
 </html>

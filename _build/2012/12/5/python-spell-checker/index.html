@@ -3,9 +3,7 @@
   <head>
     <meta charset=utf-8>
   
-    <title>Did you mean &#39;python spell checker&#39;? | Armin Ronacher's Thoughts and Writings</title>
-    <link rel="openid.server" href="http://www.myopenid.com/server">
-    <link rel="openid.delegate" href="http://mitsuhiko.myopenid.com/">
+    <title>Did you mean &#39;python spell checker&#39;? | Matt Alcock - Thoughts from a Data Scientist</title>
     <link rel="stylesheet" href="/static/style.css" type="text/css">
     <link href="/feed.atom" rel="alternate" title="Recent Blog Posts" type="application/atom+xml">
     <link rel="stylesheet" href="/static/_pygments.css" type="text/css">
@@ -14,14 +12,14 @@
   <body>
     <div class=container>
       <div class=header>
-       <a href="/about/">Matt Alcock</a> - Thoughts from a Data Scientist.
+       <a href="http://mattalcock.com">Matt Alcock</a> - Thoughts from a Data Scientist.
       </div>
       <div class=navigation>
         <ul>
-          <li><a href="/">blog</a>
-          <li><a href="/archive/">archive</a>
-          <li><a href="/tags/">tags</a>
-          <li><a href="/about/">about</a>
+          <li><a href="/">Blog</a>
+          <li><a href="/archive/">Archive</a>
+          <li><a href="/tags/">Tags</a>
+          <li><a href="/about/">About</a>
         </ul>
       </div>
       <div class=body>
@@ -32,9 +30,12 @@
   <p class=date>written on Wednesday, December 5, 2012
   
 
-  <p>How to use Python and some powerful statistics to create a very lightweight but effective Google style spell checker.</p>
-<p>Peter Norvig outlines how Google’s ‘did you mean’ spelling corrector uses probability theory, large training sets and some elegant statistical language processing to be so effective.  Type in a search like [speling] and Google comes back in 0.1 seconds or so with Did you mean: spelling. Here is a toy spelling corrector in python that achieves 80 to 90% accuracy and is very fast. (see  code below)</p>
-<p>The big.txt file that is referenced here consists of about a million words. The file is a concatenation of several public domain books from Project Gutenberg and lists of most frequent words from Wiktionary and the British National Corpus. It uses a simple training method of just counting the occurrences of each word in the big text file. Obviously Google has a lot more data to seed this spelling checker with but I was suprised at how effective this relatively small seed was.</p>
+  <p>Have you ever been really impressed with Googles 'Did you mean....' spell checker?
+Have you ever just typed something into google to help you with your spelling?</p>
+<p>My answer to the above questions above would be Yes, all the time!</p>
+<p>In a fantastic post I read some years ago Peter Norvig outlined how Google’s ‘did you mean’ spelling corrector uses probability theory, large training sets and some elegant statistical language processing to be so effective.  Type in a search like 'speling' and Google comes back in 0.1 seconds or so with Did you mean: 'spelling'. Below is a toy spelling corrector in python that achieves 80 to 90% accuracy and is very fast. It's written in a fanstically impressive 21 lines of code. It uses list comprehensions, and some of my favorite data structures (sets and default dictionaries).</p>
+<p>The code and supporting data files can be found in my hacks public repo under the spellcheck folder.</p>
+<p>The data seed comes from a big.txt file that consists of about a million words. The file is a concatenation of several public domain books from Project Gutenberg and lists of most frequent words from Wiktionary and the British National Corpus. It uses a simple training method of just counting the occurrences of each word in the big text file. Obviously Google has a lot more data to seed this spelling checker with but I was suprised at how effective this relatively small seed was.</p>
 <div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">collections</span>
 
 <span class="k">def</span> <span class="nf">words</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
@@ -67,38 +68,57 @@
     <span class="n">candidates</span> <span class="o">=</span> <span class="n">known</span><span class="p">([</span><span class="n">word</span><span class="p">])</span> <span class="ow">or</span> <span class="n">known</span><span class="p">(</span><span class="n">edits1</span><span class="p">(</span><span class="n">word</span><span class="p">))</span> <span class="ow">or</span>    <span class="n">known_edits2</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[</span><span class="n">word</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">NWORDS</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
 </pre></div>
-<p>See more details, test results and further work at Peter Novig’s site. <a class="reference external" href="http://norvig.com/spell-correct.html">http://norvig.com/spell-correct.html</a></p>
+<p>If your new to python some of the above code my look complicated and hard to follow. Although dense I love Peter's use of list comprehensions and generators. The use of nested function composits is also very efficient and I've noticed a massive speed up in using such approaches when injesting or processing large data files.</p>
+<p>An exmaple of nested function composition is:</p>
+<div class="highlight"><pre><span class="n">NWORDS</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">words</span><span class="p">(</span><span class="nb">file</span><span class="p">(</span><span class="s">&#39;big.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()))</span>
+</pre></div>
+<p>An example of complex list comprehension is:</p>
+<div class="highlight"><pre><span class="p">[</span><span class="n">a</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">alphabet</span> <span class="k">if</span> <span class="n">b</span><span class="p">]</span>
+</pre></div>
+<p>The final thing I really like in this code snippet is the overriding of the key function when max is called in the 'correct' function. This is a great way to find the word with the highest value in a dictionaty of word-&gt;count mappings.</p>
+<div class="highlight"><pre><span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">NWORDS</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+</pre></div>
+<p>The code is simple and elegant and basically generates a set of candidates words based on the partial or badly spelt word (aka the original word). The most often used word from the candiates is chosen. Peter expalins how Bayes Theorem is used to select the best correction given the original word.</p>
+<p>See more details, test results and further work at Peter Novig’s <a class="reference external" href="http://norvig.com/spell-correct.html">site</a> .</p>
 
 
   
   <p class=tags>This entry was tagged
     
-      <a href="/tags/Thoughts/">Thoughts</a>
+      <a href="/tags/bayes/">bayes</a>, 
+      <a href="/tags/probability/">probability</a>, 
+      <a href="/tags/python/">python</a> and 
+      <a href="/tags/statistics/">statistics</a>
   
 
   
 
       </div>
       <div class=footer>
-        <p>&copy; Copyright 2012 by Matt Alcock.
+        <p>If you can't explain it simply, you don't understand it well enough. - Albert Einstein 
+        <p>&nbsp;
+        <p>&copy; Copyright 2013 by Matt Alcock. 
         <p>
-          Contact me via <a href="mailto:mattalcock@mac.com">mail</a>,
-          <a href="http://twitter.com/mattalcock">@mattalcock</a>,
-          <a href="http://github.com/mattalcock">github</a>
+          Contact me via <a href="mailto:mattalcock@mac.com" target="_blank">mail</a>,
+          <a href="http://twitter.com/mattalcock" target="_blank">@mattalcock</a>,
+          <a href="http://github.com/mattalcock" target="_blank">github</a>.
         (<a href="/feed.atom" rel="alternate" title="Recent Blog Posts">feed</a>)
         <p>
-            Created using rstblog developed by  <a href="http://github.com/mitsuhiko">Armin Ronacher</a>
+            Created using rstblog developed by  <a href="http://github.com/mitsuhiko" target="_blank">Armin Ronacher</a>
       </div>
     </div>
     <script type="text/javascript">
+
       var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-20909083-1']);
+      _gaq.push(['_setAccount', 'UA-21948353-3']);
       _gaq.push(['_trackPageview']);
+
       (function() {
         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
+
     </script>
   </body>
 </html>

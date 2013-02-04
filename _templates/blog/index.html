@@ -10,6 +10,15 @@
       {% if entry.summary %}
       <div class=summary>{{ entry.render_summary() }}</div>
       {% endif %}
+        {% if entry.tags %}
+        <div class=summary-tags>
+            {% for tag in entry.tags|sort(case_sensitive=true) %}
+              {%- if not loop.first and not loop.last %}, {% endif -%}
+              {%- if loop.last and not loop.first %} and {% endif %}
+              <a href="{{ link_to('tag', tag=tag) }}">#{{ tag }}</a>
+            {%- endfor %}
+        </div>
+        {% endif %}
     </div>
   </div>
   {%- endfor %}  

@@ -13,7 +13,7 @@ h1, h2, h3, h4, h5, h6      { font-family: 'Merriweather', serif;
                               font-weight: 300; color: #222; }
 h1 a, h2 a, h3 a, h4 a,
 h5 a, h6 a                  { text-decoration: none; }
-h1 a:hover, h2 a:hover,
+h1 a:hover, h2 a:hover, 
 h3 a:hover, h4 a:hover      { text-decoration: underline; }
 h1.title                    { width: 560px; }
 h1, h2                      { margin: 10px 0 25px 0; }
@@ -26,12 +26,12 @@ div.header                  { float: left; }
 div.navigation              { float: right; }
 div.header, div.navigation  { height: 25px; margin-bottom: 42px; }
 div.navigation ul           { margin: 0; padding: 0; list-style: none; }
-div.navigation ul li        { display: inline; margin: 0 2px; padding: 0; }
+div.navigation ul li        { display: inline; margin: 0 2px; padding: 0; } 
 div.body                    { clear: both; }
 div.footer                  { border-top: 1px solid #555; padding-top: 9px;
                               margin-top: 42px; font-size: 16px;
                               text-align: center; color: #555; }
-div.footer p                { margin: 0; }
+div.footer p                { margin: 0; }   
 
 /* margins and stuff */
 p, div.line-block, ul, ol, pre,
@@ -56,7 +56,7 @@ td, th          { padding: 2px 12px; border: 1px solid #ddd; }
 
 /* footnotes */
 table.footnote          { margin: 15px 0; background: transparent; border: none; }
-table.footnote td       { border: none; padding: 9px 0 0 0; font-size: 15px; }
+table.footnote td       { border: none; padding: 9px 0 0 0; font-size: 12px; }
 table.footnote td.label { padding-right: 10px; }
 table.footnote td p     { margin: 0; }
 table.footnote td p + p { margin-top: 15px; }
@@ -73,6 +73,8 @@ div.entry-overview div.summary p    { margin: 0; padding: 0; }
 div.entry-overview div.detail       { margin-left: 140px; }
 div.entry-overview div.date         { float: left; width: 120px; color: #CC0033;
                                       text-align: right; font-size: 14px; }
+div.entry-overview div.summary-tags { font-size: 12px; }     
+div.entry-overview div.summary-tags a { text-decoration: none; font-weight: 300;}                         
 div.entry-overview h1               { font-weight: normal; }
 div.entry-overview h1:after         { content: ""; }
 
