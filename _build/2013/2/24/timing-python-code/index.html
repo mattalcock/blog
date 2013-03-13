@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset=utf-8>
+  
+    <title>Timing Python Code | Matt Alcock - A Data Scientist with a passion for Python</title>
+    <link rel="stylesheet" href="/static/style.css" type="text/css">
+    <link href="/feed.atom" rel="alternate" title="Recent Blog Posts" type="application/atom+xml">
+    <link rel="stylesheet" href="/static/_pygments.css" type="text/css">
+  
+  </head>
+  <body>
+    <div class=container>
+      <div class=header>
+       <a href="http://mattalcock.com">Matt Alcock</a> - A Data Scientist with a passion for Python
+      </div>
+      <div class=navigation>
+        <ul>
+          <li><a href="/">Blog</a>
+          <li><a href="/archive/">Archive</a>
+          <li><a href="/tags/">Tags</a>
+          <li><a href="/about/">About</a>
+        </ul>
+      </div>
+      <div class=body>
+      
+  <h1 class="title">Timing Python Code</h1>
+
+  
+  <p class=date>written on Sunday, February 24, 2013
+  
+
+  <p>This post outlines why timing code in Python is important and provides some simple decorators that can help you time your code without the concerns and worries of peppering your lovely clean code with temporary timing and print statements.</p>
+<p>Scroll down if your just after the decortor code to time functions....</p>
+<div class="section" id="python-vs-speed">
+<h2>Python vs Speed</h2>
+<p>One of things Python was orignally critisied for was speed. Like lots of Dynamic Lanaguages there is an overhead in keeping tracking of types and because code is interpreted at runtime instead of being compiled to native code at compile time dynmaic langauges like Python will always be a little slower.</p>
+<p>Where Python shines is in it's power and ability to allow progrmaers to opmtimise and focus on the algorthim. Focusing on the complextity of the problem and the algorithms order of magnitidue rather than the low level detials of memory management, pointers etc can often have massive benefits. Ask any computer science student and they can list of nermerous teachings that show alogrithm and data strucute design will beat brute force compuatation power.</p>
+<p>If your looking to build something where microsecounds count then I'd turn to C or Java. <a class="reference external" href="http://pypy.org/">PyPy</a> and other sophiticated JIT (Just in Time) compliers can help and they seam to be the future for Pytohn solutions in this space. Another aterntative is to find the slow code and either optimise that function or write a C plugin for Python for your very specific task. This last approach seams very popular in the finaince industry where milliseconds mean dollars but they still need the felxiablity and speed of devlelopment benefits that come with a dynamic lanaguage.</p>
+<p>More often than not slow code just needs some refactoring work, a new support data strucutre or a change in the complexity of processing. So the challenge is really not how can I speed up my code but what code needs my attention.</p>
+</div>
+<div class="section" id="finding-slow-code">
+<h2>Finding Slow Code</h2>
+<p>In order to find slow Python code we're going to have to time stuff. We don't want to cover our lovely clean code with temporary timing code and print statements, so how can we:</p>
+<blockquote>
+<ul class="simple">
+<li>Time code without alteringing the code of a function</li>
+<li>Get detailed timing information if the function is run with different arguments</li>
+<li>Switch off the timing at deploy time to reduce the overhead and improve the performance of monitoring</li>
+</ul>
+</blockquote>
+<p>The timing decoriatros below can help with all of these. If your new to decorators and annotations see my previous blog <a class="reference external" href="http://blog.mattalcock.com/2013/1/5/decorates-and-annotations/">post on the subject</a></p>
+</div>
+<div class="section" id="the-timeit-decorator">
+<h2>The Timeit Decorator</h2>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">timeit</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">timed</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="n">te</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">print</span> <span class="s">&#39;func:</span><span class="si">%r</span><span class="s"> args:[</span><span class="si">%r</span><span class="s">, </span><span class="si">%r</span><span class="s">] took: </span><span class="si">%2.4f</span><span class="s"> sec&#39;</span> <span class="o">%</span> \
+          <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">te</span><span class="o">-</span><span class="n">ts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">timed</span>
+</pre></div>
+<p>Using the decorator is easy either use annotations.</p>
+<div class="highlight"><pre><span class="nd">@timeit</span>
+<span class="k">def</span> <span class="nf">compute_magic</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="c">#function definition</span>
+    <span class="o">....</span>
+</pre></div>
+<p>Or realias the function you want to time.</p>
+<div class="highlight"><pre><span class="n">compute_magic</span> <span class="o">=</span> <span class="n">timeit</span><span class="p">(</span><span class="n">compute_magic</span><span class="p">)</span>
+</pre></div>
+<p>Sometimes you'll want to remove the code timing. You can either do this by remvoing the timeit annotations before deployment or you can you a configuration switch to enable the decorator to wrap the function in timing code.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c">#from config import TIME_FUCNTIONS</span>
+<span class="n">TIME_FUCNTIONS</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="k">def</span> <span class="nf">timeit</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">TIME_FUCNTIONS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">timed</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+            <span class="n">te</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+            <span class="k">print</span> <span class="s">&#39;func:</span><span class="si">%r</span><span class="s"> args:[</span><span class="si">%r</span><span class="s">, </span><span class="si">%r</span><span class="s">] took: </span><span class="si">%2.4f</span><span class="s"> sec&#39;</span> <span class="o">%</span> \
+                <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">te</span><span class="o">-</span><span class="n">ts</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">timed</span>
+</pre></div>
+<p>By simpley changing the TIME_FUNCTIONS configuration swtich the functions will not decorated. I find having these swtiches in a common config file/folder often helps.</p>
+<p>All this code and the majorty of code from my posts can be found in the hack repo of my github account. Please take a look <a class="reference external" href="https://github.com/mattalcock/hacks">here</a> . I hope it's helped if there are any questions about the above or you'd like to understand more about timing code in Python drop me a mail.</p>
+<p>Matt</p>
+</div>
+
+
+  
+  <p class=tags>This entry was tagged
+    
+      <a href="/tags/performance/">performance</a> and 
+      <a href="/tags/python/">python</a>
+  
+
+  
+
+      </div>
+      <div class=footer>
+        <p>If you can't explain it simply, you don't understand it well enough. - Albert Einstein 
+        <p>&nbsp;
+        <p>&copy; Copyright 2013 by Matt Alcock. 
+        <p>
+          Contact me via <a href="mailto:mattalcock@mac.com" target="_blank">mail</a>,
+          <a href="http://twitter.com/mattalcock" target="_blank">@mattalcock</a>,
+          <a href="http://github.com/mattalcock" target="_blank">github</a>.
+        (<a href="/feed.atom" rel="alternate" title="Recent Blog Posts">feed</a>)
+        <p>
+            Created using rstblog developed by  <a href="http://github.com/mitsuhiko" target="_blank">Armin Ronacher</a>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21948353-3']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+  </body>
+</html>

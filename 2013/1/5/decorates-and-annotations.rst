@@ -29,7 +29,7 @@ An elegant way of computing this is using the below code:
 
 So fib(7) would return 13. As you can see from the code this uses recursion. The challenge with this approach for calculating the fib sequence is that the low 'tail' function calls will get called multiple times. Remvoing this overhead is called 'tail recursion elimination' or TRE. Python doesn't support this and `probably wont <http://neopythonic.blogspot.co.uk/2009/04/tail-recursion-elimination.html>`_ . Below shows how running the fib function for just a small n can result in a massive numbers of calls of the tail values.
 
-.. sourcecode:: python
+.. sourcecode:: python 
 
     fib(7) = fib(6) + fib(5)
     fib(7) = fib(4) + fib(3) + fib(4) + fib(3)
@@ -45,10 +45,11 @@ The best way to implement this function calling memory is by decorating the func
 
     def memoize(f):
         cache= {}
-        def memf(*x):
-            if x not in cache:
-                cache[x] = f(*x)definition
-            return cache[x]
+        def memf(*args, **kw):
+            key = (args, tuple(sorted(kw.items())))
+            if key not in cache:
+                cache[key] = f(*args, **kw)
+            return cache[key]
         return memf
 
 The memoize decorator above takes a function as an argument. It then creates a new function that stores the results of the function into a cash. The decorator then returns the new function that contains the original function call.
@@ -89,14 +90,15 @@ Written as a class the decorator is:
 
     class Memoize:
 
-    def __init__(self, f):
-        self.f = f
-        self.memo = {}
+        def __init__(self, f):
+            self.f = f
+            self.cache = {}
 
-    def __call__(self, *args):
-        if not args in self.memo:
-            self.memo[args] = self.f(*args)
-        return self.memo[args]
+        def __call__(self, *args, **kw):
+            key = key = (args, tuple(sorted(kw.items())))
+            if not key in self.cache:
+                self.cache[key] = self.f(*args, **kw)
+            return self.cache[key]
 
 The class has to have to functions to operate as a decorator. __init__ and __call__. Some people find this easier to read and construct others prefer the function style. I think it really depends on how advanced the decorator is going to be.
 
@@ -112,4 +114,4 @@ The class style can then be applied in the exact same way as the above function 
             return 0
        ...
 
-I hope this has helped understand the basics of decorators and annotations.
+I hope this has helped understand the basics of decorators and annotations. All of the decorator code listed above can be found in the hacks repo on my github account `here <https://github.com/mattalcock/hacks/tree/master/decorators>`_ 

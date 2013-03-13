@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
   
-    <title>Decorators &amp; Annotations | Matt Alcock - Thoughts from a Data Scientist</title>
+    <title>Decorators &amp; Annotations | Matt Alcock - A Data Scientist with a passion for Python</title>
     <link rel="stylesheet" href="/static/style.css" type="text/css">
     <link href="/feed.atom" rel="alternate" title="Recent Blog Posts" type="application/atom+xml">
     <link rel="stylesheet" href="/static/_pygments.css" type="text/css">
@@ -12,7 +12,7 @@
   <body>
     <div class=container>
       <div class=header>
-       <a href="http://mattalcock.com">Matt Alcock</a> - Thoughts from a Data Scientist.
+       <a href="http://mattalcock.com">Matt Alcock</a> - A Data Scientist with a passion for Python
       </div>
       <div class=navigation>
         <ul>
@@ -54,10 +54,11 @@
 <p>The best way to implement this function calling memory is by decorating the function with some code that can modify the execution path to check a pre saved store first. Below is the memoize decorator as a function.</p>
 <div class="highlight"><pre><span class="k">def</span> <span class="nf">memoize</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
     <span class="n">cache</span><span class="o">=</span> <span class="p">{}</span>
-    <span class="k">def</span> <span class="nf">memf</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
-            <span class="n">cache</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="n">definition</span>
-        <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">memf</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">memf</span>
 </pre></div>
 <p>The memoize decorator above takes a function as an argument. It then creates a new function that stores the results of the function into a cash. The decorator then returns the new function that contains the original function call.
@@ -84,14 +85,15 @@ I hope that explains how decorators work in python and gives you an example of u
 <p>Written as a class the decorator is:</p>
 <div class="highlight"><pre><span class="k">class</span> <span class="nc">Memoize</span><span class="p">:</span>
 
-<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">memo</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">[</span><span class="n">args</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">memo</span><span class="p">[</span><span class="n">args</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 </pre></div>
 <p>The class has to have to functions to operate as a decorator. __init__ and __call__. Some people find this easier to read and construct others prefer the function style. I think it really depends on how advanced the decorator is going to be.</p>
 <p>The class style can then be applied in the exact same way as the above function style decorator.</p>
@@ -103,7 +105,7 @@ I hope that explains how decorators work in python and gives you an example of u
         <span class="k">return</span> <span class="mi">0</span>
    <span class="o">...</span>
 </pre></div>
-<p>I hope this has helped understand the basics of decorators and annotations.</p>
+<p>I hope this has helped understand the basics of decorators and annotations. All of the decorator code listed above can be found in the hacks repo on my github account <a class="reference external" href="https://github.com/mattalcock/hacks/tree/master/decorators">here</a></p>
 
 
   

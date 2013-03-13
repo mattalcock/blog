@@ -1,6 +1,6 @@
 public: no
 tags: [python, introduction]
-pub_date: 2013-01-05
+pub_date: 2013-02-04
 summary: |
   The 'Data Team Test' a Joel Test for data and analytics teams.
 
