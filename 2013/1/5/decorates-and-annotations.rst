@@ -32,7 +32,7 @@ So fib(7) would return 13. As you can see from the code this uses recursion. The
 .. sourcecode:: python 
 
     fib(7) = fib(6) + fib(5)
-    fib(7) = fib(4) + fib(3) + fib(4) + fib(3)
+    fib(7) = fib(5) + fib(4) + fib(4) + fib(3)
     fib(7) = fib(3) + fib(2) + fib(2) + fib(1) + fib(3) + fib(2) + fib(2) + fib(1)
     .....
     fib(7) = fib(1) + fib(0) + fib(1) + fib(0) + .......... [All fib zeros and fib ones]
@@ -52,7 +52,7 @@ The best way to implement this function calling memory is by decorating the func
             return cache[key]
         return memf
 
-The memoize decorator above takes a function as an argument. It then creates a new function that stores the results of the function into a cash. The decorator then returns the new function that contains the original function call.
+The memoize decorator above takes a function as an argument. It then creates a new function that stores the results of the function into a cache. The decorator then returns the new function that contains the original function call.
 We can then use some cleaver dynamic language tricks to re alias the fib function to the decorated version.
 
 .. sourcecode:: python
@@ -95,7 +95,7 @@ Written as a class the decorator is:
             self.cache = {}
 
         def __call__(self, *args, **kw):
-            key = key = (args, tuple(sorted(kw.items())))
+            key = (args, tuple(sorted(kw.items())))
             if not key in self.cache:
                 self.cache[key] = self.f(*args, **kw)
             return self.cache[key]
