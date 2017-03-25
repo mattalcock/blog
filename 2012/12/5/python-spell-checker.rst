@@ -21,6 +21,7 @@ The data seed comes from a big.txt file that consists of about a million words. 
 .. sourcecode:: python
 
     import re, collections
+    from nltk.corpus import words as englishWords #corpus of all English words
 
     def words(text):
         return re.findall('[a-z]+', text.lower())
@@ -49,11 +50,13 @@ The data seed comes from a big.txt file that consists of about a million words. 
         return set(w for w in words if w in NWORDS)
 
     def correct(word):
-        candidates = known([word]) or known(edits1(word)) or    known_edits2(word) or [word]
-        return max(candidates, key=NWORDS.get)
+        if word.lower() not in englishWords.words():
+            candidates = known([word]) or known(edits1(word)) or known_edits2(word) or [word]
+            word = max(candidates, key=NWORDS.get)
+        return word
 
 
-If your new to python some of the above code my look complicated and hard to follow. Although dense I love Peter's use of list comprehensions and generators. The use of nested function composits is also very efficient and I've noticed a massive speed up in using such approaches when injesting or processing large data files. 
+If your new to python some of the above code may look complicated and hard to follow. Although dense I love Peter's use of list comprehensions and generators. The use of nested function composits is also very efficient and I've noticed a massive speed up in using such approaches when injesting or processing large data files. 
 
 An exmaple of nested function composition is:
 
