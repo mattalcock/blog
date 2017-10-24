@@ -75,6 +75,6 @@ The final thing I really like in this code snippet is the overriding of the key 
 
 The code is simple and elegant and basically generates a set of candidates words based on the partial or badly spelt word (aka the original word). The most often used word from the candiates is chosen. Peter expalins how Bayes Theorem is used to select the best correction given the original word.
 
-See more details, test results and further work at Peter Novig’s `site <http://norvig.com/spell-correct.html>`_ .
+See more details, test results and further work at Peter Norvig’s `site <http://norvig.com/spell-correct.html>`_ .
 
 
