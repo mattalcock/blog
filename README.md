@@ -1,5 +1,5 @@
-blog
-====
+Blog | Matt Alcock
+=============================
 
 My personal blog
 
