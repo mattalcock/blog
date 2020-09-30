@@ -1,4 +1,4 @@
-blog
+Here we see information about my blog.
 ====
 
 My personal blog
