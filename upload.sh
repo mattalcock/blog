@@ -4,7 +4,7 @@ USER='mattalc1'
 TARGETFOLDER='/public_html/blog'
 SOURCEFOLDER='/Users/mattalcock/Dev/blog/_build'
 
-#lftp was installed using  'brew install lftp'
+#lftp was installed using this to make it on 'brew install lftp'
 
 lftp -f "
 open $HOST
