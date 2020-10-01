@@ -3,14 +3,17 @@
   <head>
     <meta charset=utf-8>
   {% block htmlhead %}
-    <title>{% block title %}Home{% endblock %} | Matt Alcock - A Data Scientist with a passion for Python</title>
+    <title>
+      {% block title %}
+      Home
+      {% endblock %} | Matt Alcock - A Data Scientist with a passion for Python</title>
     <link rel="stylesheet" href="/static/style.css" type="text/css">
     <link href="/feed.atom" rel="alternate" title="Recent Blog Posts" type="application/atom+xml">
     {%- for link in links %}
-    <link rel="{{ link.rel }}" href="{{ link.href }}"{%
-      if link.media %} media="{{ link.media }}"{% endif %} type="{{ link.type }}">
-    {%- endfor %}
-  {% endblock %}
+    <link rel="{{ link.rel }}" href="{{ link.href }}"
+          {% if link.media %} media="{{ link.media }}"{% endif %} type="{{ link.type }}">
+      {%- endfor %}
+      {% endblock %}
   </head>
   <body>
     <div class=container>
@@ -26,7 +29,8 @@
         </ul>
       </div>
       <div class=body>
-      {% block body %}{% endblock %}
+      {% block body %}
+      {% endblock %}
       </div>
       <div class=footer>
         <p>If you can't explain it simply, you don't understand it well enough. - Albert Einstein 
