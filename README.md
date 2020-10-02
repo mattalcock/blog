@@ -1,7 +1,7 @@
-blog
+Blog
 ====
 
-My personal blog
+My Personal blog.You will love it.
 
 
 Building blog command....
